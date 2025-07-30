@@ -83,14 +83,7 @@
 
   <!-- Channel Cards -->
   <div id="channelContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 px-4 mt-5 max-w-7xl mx-auto">
-    <!-- Contoh channel (bisa ditambah/diganti sesuai kebutuhan) -->
-    <div class="bg-gray-800 rounded-md p-3 cursor-pointer hover:bg-red-700 text-center channel-card" onclick="loadStreamCustom(this)"
-      data-src="https://livecdn.euw1-0005.jwplive.com/live/sites/fM9jRrkn/media/5FYelsSE/live.isml/.m3u8"
-      data-poster="assets/poster.png">
-      <h3 class="text-white font-semibold border-b border-gray-500 mb-2">Italy vs Cuba</h3>
-      <p class="text-gray-300 text-sm" data-start="2025-07-30T13:30:00+07:00">Loading...</p>
-    </div>
-    <!-- Tambahkan channel lainnya di sini -->
+    <!-- Kartu channel akan di-render otomatis -->
   </div>
 
   <!-- QR Donasi -->
@@ -106,5 +99,99 @@
     © 2025 GameOnX
   </footer>
   <script src="script.js"></script>
+</body>
+</html>
+
+  <!-- JavaScript -->
+  <script>
+    const video = document.getElementById("videoPlayer");
+    video.muted = false;
+    let hls;
+
+    function loadStreamCustom(el) {
+      const src = el.dataset.src;
+      const poster = el.dataset.poster;
+      video.poster = poster;
+      video.controls = true;
+
+      if (Hls.isSupported()) {
+        if (hls) hls.destroy();
+        hls = new Hls();
+        hls.loadSource(src);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
+      } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+        video.src = src;
+        video.addEventListener("loadedmetadata", () => video.play(), { once: true });
+      }
+
+      document.getElementById('playerSection').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function setQuality(level) {
+      if (!hls) return;
+      hls.currentLevel = level === 'auto' ? -1 : parseInt(level);
+    }
+
+    function setQualityByHeight(targetHeight) {
+      if (!hls || !hls.levels) return;
+      const levelIndex = hls.levels.findIndex(level => level.height === targetHeight);
+      if (levelIndex !== -1) {
+        hls.currentLevel = levelIndex;
+      } else {
+        alert("Resolusi tidak tersedia");
+      }
+    }
+
+    const scrollBtn = document.getElementById("scrollTopBtn");
+    window.addEventListener("scroll", () => {
+      scrollBtn.classList.toggle("show", window.scrollY > 300);
+    });
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // 🔴 LIVE Label & Time Formatter
+    const timeOffset = { 420: "WIB", 480: "WITA", 540: "WIT" };
+    const getUserZoneLabel = () => timeOffset[-new Date().getTimezoneOffset()] || "WIB";
+    function formatToLocalTime(dateStr) {
+      const date = new Date(dateStr);
+      const zone = getUserZoneLabel();
+      const options = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false };
+      const adjusted = new Date(date.getTime() + ((new Date().getTimezoneOffset() - 420) * 60000));
+      return adjusted.toLocaleString('id-ID', options).replace(',', '') + ' ' + zone;
+    }
+    function updateChannelCards() {
+      const container = document.querySelector('#channelContainer');
+      const cards = Array.from(container.children);
+      const now = new Date();
+      cards.forEach(card => {
+        const label = card.querySelector('[data-start]');
+        const timeStr = label.getAttribute('data-start');
+        const startDate = new Date(timeStr);
+        label.textContent = formatToLocalTime(timeStr);
+        if (now >= startDate) {
+          const liveTag = document.createElement("span");
+          liveTag.textContent = " 🔴 LIVE";
+          liveTag.className = "text-red-500 font-bold animate-pulse";
+          label.appendChild(liveTag);
+          card.classList.add("border", "border-red-500");
+        }
+      });
+      cards.sort((a, b) => {
+        const now = new Date();
+        const aTime = new Date(a.querySelector('[data-start]').dataset.start);
+        const bTime = new Date(b.querySelector('[data-start]').dataset.start);
+        const aLive = now >= aTime;
+        const bLive = now >= bTime;
+        if (aLive && !bLive) return -1;
+        if (!aLive && bLive) return 1;
+        return aTime - bTime;
+      });
+      container.innerHTML = '';
+      cards.forEach(card => container.appendChild(card));
+    }
+    window.addEventListener("DOMContentLoaded", updateChannelCards);
+  </script>
 </body>
 </html>
