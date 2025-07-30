@@ -83,7 +83,14 @@
 
   <!-- Channel Cards -->
   <div id="channelContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 px-4 mt-5 max-w-7xl mx-auto">
-    <!-- Kartu channel akan di-render otomatis -->
+    <!-- Contoh channel (bisa ditambah/diganti sesuai kebutuhan) -->
+    <div class="bg-gray-800 rounded-md p-3 cursor-pointer hover:bg-red-700 text-center channel-card" onclick="loadStreamCustom(this)"
+      data-src="https://livecdn.euw1-0005.jwplive.com/live/sites/fM9jRrkn/media/5FYelsSE/live.isml/.m3u8"
+      data-poster="assets/poster.png">
+      <h3 class="text-white font-semibold border-b border-gray-500 mb-2">Italy vs Cuba</h3>
+      <p class="text-gray-300 text-sm" data-start="2025-07-30T13:30:00+07:00">Loading...</p>
+    </div>
+    <!-- Tambahkan channel lainnya di sini -->
   </div>
 
   <!-- QR Donasi -->
