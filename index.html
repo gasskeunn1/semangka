@@ -3,20 +3,108 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GameOnX - Streaming</title>
-  <link rel="icon" href="/favicon.ico" />
+  <title>GameOnX</title>
+
+  <!-- Meta Sosial -->
+  <meta name="description" content="Tonton live streaming voli di GameOnX.">
+  <meta property="og:title" content="GameOnX - Live Streaming">
+  <meta property="og:description" content="Tonton live streaming voli di GameOnX.">
+  <meta property="og:image" content="https://www.gameonx.my.id/assets/preview.jpg">
+  <meta property="og:url" content="https://www.gameonx.my.id">
+  <meta property="og:type" content="website">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="GameOnX - Live Streaming">
+  <meta name="twitter:description" content="Tonton live streaming voli di GameOnX.">
+  <meta name="twitter:image" content="https://www.gameonx.my.id/assets/preview.jpg">
+  <meta name="twitter:url" content="https://www.gameonx.my.id">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+  <link rel="manifest" href="assets/site.webmanifest">
+  <link rel="stylesheet" href="assets/style.css">
+
+  <!-- Scripts & Style -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.3.5/shaka-player.compiled.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <style>
+    .glow-effect { box-shadow: 0 0 10px rgba(75, 85, 99, 0.5), 0 0 20px rgba(75, 85, 99, 0.3); transition: box-shadow 0.3s ease; }
+    .glow-effect:hover { box-shadow: 0 0 12px rgba(75, 85, 99, 0.7), 0 0 25px rgba(75, 85, 99, 0.4); }
+    .channel-card:hover { box-shadow: 0 0 12px rgba(239, 68, 68, 0.6), 0 0 24px rgba(239, 68, 68, 0.4); }
+    #scrollTopBtn { display: none; position: fixed; bottom: 30px; right: 30px; z-index: 50; background-color: #1f2937; border-radius: 9999px; padding: 0.75rem; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: opacity 0.3s ease; }
+    #scrollTopBtn.show { display: block; opacity: 1; }
+  </style>
 </head>
-<body class="bg-black text-white font-sans">
-  <div class="max-w-6xl mx-auto px-4 py-6">
-    <h1 class="text-3xl font-bold mb-4">GameOnX - Live Streaming</h1>
-    <div id="video-container" class="relative aspect-video bg-black mb-6">
-      <video id="video" poster="assets/placeholder.jpg" class="w-full h-full" autoplay muted></video>
-    </div>
-    <div id="channels" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+
+<body class="bg-gray-900 text-white font-sans min-h-screen flex flex-col relative">
+  <!-- Scroll Button -->
+  <button id="scrollTopBtn" onclick="scrollToTop()" class="hover:bg-gray-700">
+    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+    </svg>
+  </button>
+
+  <!-- Header -->
+  <div class="px-4 pt-4">
+    <header class="flex justify-between items-center px-4 py-3 bg-gray-800 shadow-md rounded-md">
+      <img src="assets/gameonx logo 3.png" alt="GameOnX Logo" class="h-12 w-auto sm:h-10 md:h-12 lg:h-16">
+      <div class="flex gap-2 text-sm">
+        <a href="https://chat.whatsapp.com/L9pViyD35Zq439t75avxq8" target="_blank" class="bg-gray-600 px-3 py-1 rounded-lg font-semibold">Join Grup</a>
+        <a href="https://sociabuzz.com/fiqaz/donate" target="_blank" class="bg-gray-600 px-3 py-1 rounded-lg font-semibold">Donasi</a>
+      </div>
+    </header>
   </div>
 
-  <script src="app.js"></script>
+  <!-- Label LIVE -->
+  <div class="text-center mt-4 mb-2">
+    <div class="inline-block bg-gradient-to-r from-gray-800 to-gray-700 px-6 py-2 rounded text-lg font-bold text-white shadow-lg border border-gray-600 transition-transform duration-300 hover:scale-105">
+      🔴LIVE STREAMING
+    </div>
+  </div>
+
+  <!-- Video Player -->
+  <div class="flex justify-center mt-4 px-4" id="playerSection">
+    <div class="w-full max-w-4xl">
+      <video id="videoPlayer" class="w-full rounded shadow-2xl bg-black glow-effect" poster="assets/poster.png"></video>
+    </div>
+  </div>
+
+  <!-- Quality Buttons -->
+  <div class="flex justify-center mt-4 gap-2 text-sm flex-wrap">
+    <button onclick="setQuality('auto')" class="bg-transparent border border-white/30 text-white px-3 py-1 rounded hover:bg-white/10">Auto</button>
+    <button onclick="setQualityByHeight(360)" class="bg-transparent border border-white/30 text-white px-3 py-1 rounded hover:bg-white/10">360p</button>
+    <button onclick="setQualityByHeight(540)" class="bg-transparent border border-white/30 text-white px-3 py-1 rounded hover:bg-white/10">540p</button>
+    <button onclick="setQualityByHeight(720)" class="bg-transparent border border-white/30 text-white px-3 py-1 rounded hover:bg-white/10">720p</button>
+    <button onclick="setQualityByHeight(1080)" class="bg-transparent border border-white/30 text-white px-3 py-1 rounded hover:bg-white/10">1080p</button>
+  </div>
+
+  <!-- Channel Cards -->
+  <div id="channelContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 px-4 mt-5 max-w-7xl mx-auto">
+    <!-- Contoh channel (bisa ditambah/diganti sesuai kebutuhan) -->
+    <div class="bg-gray-800 rounded-md p-3 cursor-pointer hover:bg-red-700 text-center channel-card" onclick="loadStreamCustom(this)"
+      data-src="https://livecdn.euw1-0005.jwplive.com/live/sites/fM9jRrkn/media/5FYelsSE/live.isml/.m3u8"
+      data-poster="assets/poster.png">
+      <h3 class="text-white font-semibold border-b border-gray-500 mb-2">Italy vs Cuba</h3>
+      <p class="text-gray-300 text-sm" data-start="2025-07-30T13:30:00+07:00">Loading...</p>
+    </div>
+    <!-- Tambahkan channel lainnya di sini -->
+  </div>
+
+  <!-- QR Donasi -->
+  <div id="donasi" class="flex justify-center mt-6 px-4">
+    <div class="bg-white p-4 rounded-xl shadow-lg text-center">
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://sociabuzz.com/fiqaz/support" alt="QR Donasi" class="mx-auto mb-2" />
+      <p class="text-black font-semibold">Support/Donasi</p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="text-center text-xs text-gray-400 mt-auto py-4">
+    © 2025 GameOnX
+  </footer>
+  <script src="script.js"></script>
 </body>
 </html>
