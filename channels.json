@@ -1,14 +1,14 @@
 [
   {
     "title": "Italy vs Cuba",
-    "poster": "https://via.placeholder.com/320x180.png?text=Channel+1",
-    "url": "https://livecdn.euw1-0005.jwplive.com/live/sites/fM9jRrkn/media/5FYelsSE/live.isml/.m3u8",
-    "start": "2025-07-30T13:30:00+08:00"
+    "src": "https://livecdn.euw1-0005.jwplive.com/live/sites/fM9jRrkn/media/5FYelsSE/live.isml/.m3u8",
+    "poster": "assets/poster.png",
+    "start": "2025-07-30T13:30:00+07:00"
   },
   {
-    "title": "Brazil vs China",
-    "poster": "https://via.placeholder.com/320x180.png?text=Channel+2",
-    "url": "https://livecdn.euw1-0005.jwplive.com/live/sites/fM9jRrkn/media/YWP2ZBUi/live.isml/.m3u8",
-    "start": "2025-07-30T17:30:00+08:00"
+    "title": "Japan vs Brazil",
+    "src": "https://example.com/stream2.m3u8",
+    "poster": "assets/poster.png",
+    "start": "2025-07-30T15:00:00+07:00"
   }
 ]
